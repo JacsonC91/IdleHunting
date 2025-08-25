@@ -5,11 +5,467 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Idle Game - Caçadas</title>
   <link href="https://fonts.googleapis.com/css2?family=Spartan:ital,wght@1,300&display=swap" rel="stylesheet">
-  <!-- (CSS completo do jogo aqui, já incluso) -->
-  <!-- ... -->
+  <style>
+    /* ... (mesmo CSS do seu original) ... */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Spartan', sans-serif;
+      background-color: #2f4f4f;
+      color: #f4f1e1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      overflow: auto;
+    }
+    .menu {
+      background-color: #c2b97f;
+      width: 100%;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 4px solid #7d6747;
+    }
+    .main {
+      display: flex;
+      flex-direction: column;
+      margin-top: 20px;
+      width: 100%;
+      max-width: 1000px;
+      padding: 10px;
+      box-sizing: border-box;
+      gap: 20px;
+      justify-content: center;
+      overflow: auto;
+    }
+    .info-caçadas {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+    }
+    .panel {
+      background-color: #3e4b42;
+      padding: 15px;
+      border: 2px solid #7d6747;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      width: 48%;
+    }
+    button {
+      padding: 8px;
+      font-size: 14px;
+      margin: 8px 0;
+      cursor: pointer;
+      background-color: #8e7b4c;
+      color: white;
+      border: 2px solid #7d6747;
+      border-radius: 0;
+      width: 100%;
+      font-family: 'Spartan', sans-serif;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #7d6747;
+    }
+    .exp-bar-container {
+      width: 100%;
+      background-color: #6b4f31;
+      height: 20px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .exp-bar {
+      background-color: #2ecc71;
+      height: 100%;
+    }
+    .exp-text {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: 14px;
+      color: white;
+    }
+    .life-bar-container {
+      width: 100%;
+      background-color: #d32f2f;
+      border-radius: 0;
+      height: 20px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .life-bar {
+      background-color: #388e3c;
+      height: 100%;
+      border-radius: 0;
+    }
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #c2b97f;
+      padding: 20px;
+      border: 2px solid #7d6747;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      width: 300px;
+    }
+    .info p {
+      margin: 6px 0;
+      font-size: 16px;
+    }
+    .gold {
+      color: goldenrod;
+      font-weight: bold;
+    }
+    .life {
+      color: crimson;
+      font-weight: bold;
+    }
+    .armor {
+      color: green;
+      font-weight: bold;
+    }
+    .status {
+      font-size: 16px;
+      margin-top: 20px;
+      min-height: 24px;
+    }
+    .quests-panel {
+      background-color: #3e4b42;
+      padding: 15px;
+      border: 2px solid #7d6747;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .quest-button {
+      background-color: #8e7b4c;
+      color: white;
+      font-size: 14px;
+      padding: 8px;
+      border: 2px solid #7d6747;
+      margin-top: 8px;
+    }
+    .quest-button:hover {
+      background-color: #7d6747;
+    }
+    .quest-progress-bar-container {
+      width: 100%;
+      background-color: #6b4f31;
+      height: 20px;
+      margin-top: 10px;
+      position: relative;
+    }
+    .quest-progress-bar {
+      background-color: #f39c12;
+      height: 100%;
+    }
+    .quest-progress-text {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-weight: bold;
+      font-size: 14px;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-  <!-- (Conteúdo do jogo, já incluso) -->
-  <!-- ... -->
+
+  <div class="menu">Jogo Medieval - Caçadas</div>
+
+  <!-- Mensagens de status -->
+  <div id="huntInfo" class="status"></div>
+
+  <div class="main">
+    <div class="info-caçadas">
+      <div class="panel info">
+        <h2>Informações do Jogador</h2>
+        <p><strong>Nome:</strong> <span id="playerName">Herói</span></p>
+        <p><strong>Nível:</strong> <span id="level">1</span></p>
+        <p><strong>Gold:</strong> <span id="gold">50</span></p>
+        <!-- Barra de Vida com número -->
+        <p><strong>Vida:</strong></p>
+        <div class="life-bar-container">
+          <div id="lifeBar" class="life-bar"></div>
+        </div>
+        <p>Vida: <span id="lifeNumber">100</span></p>
+        <!-- Barra de experiência -->
+        <p><strong>Experiência:</strong></p>
+        <div class="exp-bar-container">
+          <div id="expBar" class="exp-bar"></div>
+          <div id="expText" class="exp-text">0 / 100</div>
+        </div>
+        <p><strong>Armadura:</strong> <span id="armor">Nenhuma</span></p>
+        <p><strong>Espada:</strong> <span id="sword">Nenhuma</span></p>
+        <button onclick="buyPotion()">Usar Poção de Vida (20 Gold)</button>
+        <button onclick="buyArmor()">Comprar Armadura (50 Gold)</button>
+        <button onclick="buySword()">Comprar Espada (100 Gold)</button>
+      </div>
+      <div class="panel">
+        <h2>Caçadas</h2>
+        <div id="huntList">
+          <div class="hunt">
+            <p><strong>Goblin</strong> (Nível 1) - <span class="gold">10 Gold</span> | Perda de Vida: <span class="life">5%</span></p>
+            <button onclick="prepareHunt(1, 'Goblin')">Caçar Goblin</button>
+          </div>
+          <div class="hunt">
+            <p><strong>Orc</strong> (Nível 3) - <span class="gold">20 Gold</span> | Perda de Vida: <span class="life">10%</span></p>
+            <button onclick="prepareHunt(3, 'Orc')">Caçar Orc</button>
+          </div>
+          <div class="hunt">
+            <p><strong>Troll</strong> (Nível 5) - <span class="gold">30 Gold</span> | Perda de Vida: <span class="life">15%</span></p>
+            <button onclick="prepareHunt(5, 'Troll')">Caçar Troll</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="quests-panel">
+      <h2>Quests</h2>
+      <div id="questProgress" class="quest-progress-bar-container">
+        <div id="questProgressBar" class="quest-progress-bar"></div>
+        <div id="questProgressText" class="quest-progress-text">0/5</div>
+      </div>
+      <button class="quest-button" onclick="acceptQuest(1)">Quest: Caçar 5 Goblins</button>
+      <button class="quest-button" onclick="acceptQuest(2)">Quest: Caçar 3 Orcs</button>
+      <button class="quest-button" onclick="acceptQuest(3)">Quest: Caçar 10 Trolls</button>
+    </div>
+  </div>
+
+  <!-- Modal de Caçada -->
+  <div id="huntModal" class="modal">
+    <div class="modal-content">
+      <h3>Caçada Iniciada</h3>
+      <p id="cooldownTimer">Aguarde...</p>
+      <button onclick="closeHuntModal()">Fechar</button>
+    </div>
+  </div>
+  <!-- Modal de Resultado -->
+  <div id="resultModal" class="modal">
+    <div class="modal-content">
+      <h3>Resultado da Caçada</h3>
+      <p id="resultMessage"></p>
+      <button onclick="closeResultModal()">Fechar</button>
+    </div>
+  </div>
+
+  <script>
+    let characterLevel = 1;
+    let currentXP = 0;
+    let maxXP = 100;
+    let life = 100;
+    let maxLife = 100;
+    let gold = 50; // Agora inicia com 50 gold!
+    let armor = 0;
+    let sword = 0;
+    let isHunting = false;
+    let questProgress = 0;
+    let questGoal = 5;
+    let questType = 'Goblin'; // Tipo da quest ativa
+
+    function updateDisplay() {
+      document.getElementById("level").textContent = characterLevel;
+      document.getElementById("gold").textContent = gold;
+      document.getElementById("armor").textContent = armor > 0 ? armor : "Nenhuma";
+      document.getElementById("sword").textContent = sword > 0 ? sword : "Nenhuma";
+      document.getElementById("lifeNumber").textContent = life;
+
+      let lifePercent = (life / maxLife) * 100;
+      document.getElementById("lifeBar").style.width = `${lifePercent}%`;
+
+      let expPercent = (currentXP / maxXP) * 100;
+      document.getElementById("expBar").style.width = `${expPercent}%`;
+      document.getElementById("expText").textContent = `${currentXP} / ${maxXP}`;
+
+      document.getElementById("questProgressBar").style.width = `${(questProgress / questGoal) * 100}%`;
+      document.getElementById("questProgressText").textContent = `${questProgress}/${questGoal}`;
+    }
+
+    function displayStatus(msg) {
+      document.getElementById("huntInfo").textContent = msg;
+    }
+
+    function openHuntModal() {
+      document.getElementById("huntModal").style.display = "flex";
+    }
+
+    function closeHuntModal() {
+      document.getElementById("huntModal").style.display = "none";
+    }
+
+    function openResultModal(resultMessage) {
+      document.getElementById("resultMessage").textContent = resultMessage;
+      document.getElementById("resultModal").style.display = "flex";
+    }
+
+    function closeResultModal() {
+      document.getElementById("resultModal").style.display = "none";
+    }
+
+    function prepareHunt(huntLevel, monsterName) {
+      if (isHunting) {
+        displayStatus("Caçada em andamento! Aguarde o término.");
+        return;
+      }
+      if (huntLevel > characterLevel) {
+        displayStatus("Você não tem o nível necessário para essa caçada!");
+        return;
+      }
+      if (life <= 0) {
+        displayStatus("Você está sem vida! Use uma poção para continuar.");
+        return;
+      }
+      let damagePercent = 5 * huntLevel;
+      damagePercent -= armor * 2;
+      const goldEarned = huntLevel * 10;
+      displayStatus(`Caçar: ${monsterName} | Ganho: ${goldEarned} gold | Perda de Vida: ${damagePercent}%`);
+      startHunt(huntLevel, damagePercent, goldEarned, monsterName);
+    }
+
+    function startHunt(huntLevel, damagePercent, goldEarned, monsterName) {
+      isHunting = true;
+      displayStatus("Caçada iniciada...");
+      openHuntModal();
+
+      const baseCooldown = 5 + huntLevel * 2;
+      const cooldownReduction = sword * 0.5;
+      const adjustedCooldown = Math.max(baseCooldown - cooldownReduction, 2);
+
+      const damage = Math.floor((damagePercent / 100) * maxLife);
+      const xpGained = huntLevel * 10;
+
+      let countdown = adjustedCooldown;
+      document.getElementById("cooldownTimer").textContent = `Aguarde... (${countdown}s restantes)`;
+      let cooldownTimer = setInterval(() => {
+        countdown--;
+        document.getElementById("cooldownTimer").textContent = `Aguarde... (${countdown}s restantes)`;
+        if (countdown <= 0) clearInterval(cooldownTimer);
+      }, 1000);
+
+      setTimeout(() => {
+        life = Math.max(life - damage, 0);
+        gold += goldEarned;
+        currentXP += xpGained;
+        if (currentXP >= maxXP) {
+          levelUp();
+        }
+        // Só soma progresso se o tipo do monstro for igual ao da quest
+        if (
+          (questType === "Goblin" && monsterName === "Goblin") ||
+          (questType === "Orc" && monsterName === "Orc") ||
+          (questType === "Troll" && monsterName === "Troll")
+        ) {
+          questProgress++;
+          // Quest completa!
+          if (questProgress >= questGoal) {
+            completeQuest();
+          }
+        }
+        displayStatus(`Caçada concluída! +${goldEarned} gold, -${damage} vida`);
+        openResultModal(`Você derrotou um ${monsterName} e ganhou ${goldEarned} gold! Perdeu ${damage} de vida.`);
+        isHunting = false;
+        closeHuntModal();
+        updateDisplay();
+      }, adjustedCooldown * 1000);
+    }
+
+    function levelUp() {
+      characterLevel++;
+      currentXP = 0;
+      maxXP = Math.floor(maxXP * 1.25);
+      displayStatus(`Você subiu para o nível ${characterLevel}!`);
+      updateDisplay();
+    }
+
+    function buyPotion() {
+      const potionCost = 20;
+      if (gold < potionCost) {
+        displayStatus("Você não tem gold suficiente para comprar uma poção.");
+        return;
+      }
+      if (life >= maxLife) {
+        displayStatus("Sua vida já está cheia.");
+        return;
+      }
+      gold -= potionCost;
+      life = Math.min(life + 30, maxLife);
+      displayStatus(`Poção usada! Vida restaurada em 30.`);
+      updateDisplay();
+    }
+
+    function buyArmor() {
+      const armorCost = 50;
+      if (gold < armorCost) {
+        displayStatus("Você não tem gold suficiente para comprar uma armadura.");
+        return;
+      }
+      armor++;
+      gold -= armorCost;
+      displayStatus(`Você comprou uma armadura! Nível de armadura: ${armor}`);
+      updateDisplay();
+    }
+
+    function buySword() {
+      const swordCost = 100;
+      if (gold < swordCost) {
+        displayStatus("Você não tem gold suficiente para comprar uma espada.");
+        return;
+      }
+      sword++;
+      gold -= swordCost;
+      displayStatus(`Você comprou uma espada! Nível de espada: ${sword}`);
+      updateDisplay();
+    }
+
+    function acceptQuest(questId) {
+      questProgress = 0;
+      if (questId === 1) {
+        questGoal = 5;
+        questType = "Goblin";
+        displayStatus("Você aceitou a quest: Caçar 5 Goblins");
+      }
+      else if (questId === 2) {
+        questGoal = 3;
+        questType = "Orc";
+        displayStatus("Você aceitou a quest: Caçar 3 Orcs");
+      }
+      else if (questId === 3) {
+        questGoal = 10;
+        questType = "Troll";
+        displayStatus("Você aceitou a quest: Caçar 10 Trolls");
+      }
+      updateDisplay();
+    }
+
+    function completeQuest() {
+      let rewardGold = 0;
+      if (questType === "Goblin") rewardGold = 30;
+      if (questType === "Orc") rewardGold = 60;
+      if (questType === "Troll") rewardGold = 150;
+      gold += rewardGold;
+      displayStatus(`Quest completa! Você ganhou ${rewardGold} gold.`);
+      openResultModal(`Parabéns! Você completou a quest de caçar ${questGoal} ${questType}s e ganhou ${rewardGold} gold!`);
+      updateDisplay();
+      // Opcional: Resetar quest ou avisar para aceitar outra
+    }
+
+    updateDisplay();
+  </script>
 </body>
 </html>
